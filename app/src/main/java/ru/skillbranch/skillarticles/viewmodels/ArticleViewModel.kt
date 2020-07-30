@@ -70,11 +70,11 @@ class ArticleViewModel(private val articleId: String) :
     }
 
     override fun handleSearchMode(isSearch: Boolean) {
-        TODO("Not yet implemented")
+        updateState { it.copy(isSearch = isSearch, isShowMenu = false, searchPosition = 0) }
     }
 
     override fun handleSearch(query: String?) {
-        TODO("Not yet implemented")
+
     }
 
     override fun handleBookmark() {
