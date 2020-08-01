@@ -9,7 +9,7 @@ import ru.skillbranch.skillarticles.extensions.data.toArticlePersonalInfo
 import ru.skillbranch.skillarticles.extensions.format
 
 class ArticleViewModel(private val articleId: String) :
-    IArticleViewModel,BaseViewModel<ArticleState>(ArticleState()) {
+    IArticleViewModel, BaseViewModel<ArticleState>(ArticleState()) {
     private val repository = ArticleRepository
 
     init {
@@ -18,6 +18,7 @@ class ArticleViewModel(private val articleId: String) :
             state.copy(
                 shareLink = article.shareLink,
                 title = article.title,
+                author = article.author,
                 category = article.category,
                 categoryIcon = article.categoryIcon,
                 date = article.date.format()
@@ -85,12 +86,17 @@ class ArticleViewModel(private val articleId: String) :
 
         toggleBookmark()
 
-        val msg = if (currentState.isBookmark) Notify.TextMessage("Add to bookmarks") else Notify.TextMessage("Remove from bookmarks")
+        val msg =
+            if (currentState.isBookmark) Notify.TextMessage("Add to bookmarks") else Notify.TextMessage(
+                "Remove from bookmarks"
+            )
 
         notify(msg)
     }
 
     override fun handleLike() {
+        val isLiked = currentState.isLike
+
         val toggleLike = {
             val info = currentState.toArticlePersonalInfo()
             repository.updateArticlePersonalInfo(info.copy(isLike = !info.isLike))
@@ -98,7 +104,7 @@ class ArticleViewModel(private val articleId: String) :
 
         toggleLike()
 
-        val msg = if (currentState.isLike) Notify.TextMessage("Mark is liked")
+        val msg = if (!isLiked) Notify.TextMessage("Mark is liked")
         else {
             Notify.ActionMessage(
                 "Don`t like it anymore",
