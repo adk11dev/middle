@@ -63,6 +63,8 @@ class Event<out E>(private val content: E) {
             content
         }
     }
+
+    fun peekContent(): E = content
 }
 
 class EventObserver<E>(private val onEventUnhandleContent: (E) -> Unit) : Observer<Event<E>> {
