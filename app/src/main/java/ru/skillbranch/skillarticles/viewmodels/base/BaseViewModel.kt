@@ -1,9 +1,11 @@
-package ru.skillbranch.skillarticles.viewmodels
+package ru.skillbranch.skillarticles.viewmodels.base
 
+import android.os.Bundle
 import androidx.annotation.UiThread
 import androidx.lifecycle.*
+import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
 
-abstract class BaseViewModel<T>(initState: T) : ViewModel() {
+abstract class BaseViewModel<T : IViewModelState>(initState: T) : ViewModel() {
     val notifications = MutableLiveData<Event<Notify>>()
 
     val state: MediatorLiveData<T> = MediatorLiveData<T>().apply {
@@ -21,7 +23,8 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
 
     @UiThread
     protected fun notify(content: Notify) {
-        notifications.value = Event(content)
+        notifications.value =
+            Event(content)
     }
 
     fun observeState(owner: LifecycleOwner, onChanged: (newState: T) -> Unit) {
@@ -31,7 +34,10 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
     fun observeNotifications(
         owner: LifecycleOwner, onNotify: (notification: Notify) -> Unit
     ) {
-        notifications.observe(owner, EventObserver { onNotify(it) })
+        notifications.observe(owner,
+            EventObserver {
+                onNotify(it)
+            })
     }
 
     protected fun <S> subscribeOnDataSource(
@@ -42,14 +48,14 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
             state.value = onChanged(it, currentState) ?: return@addSource
         }
     }
-}
 
-class ViewModelFactory(private val params: String) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ArticleViewModel::class.java)) {
-            return ArticleViewModel(params) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+    fun saveState(outState: Bundle) {
+        currentState.save(outState)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun restoreState(savedState: Bundle) {
+        state.value = currentState.restore(savedState) as T
     }
 }
 
