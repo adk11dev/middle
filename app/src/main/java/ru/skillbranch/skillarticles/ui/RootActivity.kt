@@ -238,8 +238,8 @@ class RootActivity : BaseActivity<ArticleViewModel>(), IArticleView {
             btn_settings.isChecked = it
             if (it) submenu.open() else submenu.close()
         }
-        private var title: String by RenderProp("loading") { toolbar.title }
-        private var category: String by RenderProp("loading") { toolbar.subtitle }
+        private var title: String by RenderProp("loading") { toolbar.title = it }
+        private var category: String by RenderProp("loading") { toolbar.subtitle = it }
         private var categoryIcon: Int by RenderProp(R.drawable.logo_placeholder) {
             toolbar.logo = getDrawable(it)
         }
